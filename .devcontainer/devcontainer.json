@@ -1,0 +1,7 @@
+{
+  "name": "Codespace with AWS CLI",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "postCreateCommand": "aws --version"
+}
