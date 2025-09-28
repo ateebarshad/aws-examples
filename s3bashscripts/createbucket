@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+
+# Check if bucket name is passed
+if [ -z "$1" ]; then
+  echo "❌ Usage: $0 <bucket-name> [region]"
+  exit 1
+fi
+
+BUCKET_NAME=$1
+REGION=${2:-us-east-1}   # Default region if not provided
+
+echo "🪣 Creating S3 bucket: $BUCKET_NAME in region: $REGION ..."
+
+# us-east-1 does not require LocationConstraint
+if [ "$REGION" == "us-east-1" ]; then
+  aws s3api create-bucket \
+    --bucket "$BUCKET_NAME" \
+    --region "$REGION"
+else
+  aws s3api create-bucket \
+    --bucket "$BUCKET_NAME" \
+    --region "$REGION" \
+    --create-bucket-configuration LocationConstraint="$REGION"
+fi
+
+echo "✅ Bucket '$BUCKET_NAME' created successfully in region '$REGION'"

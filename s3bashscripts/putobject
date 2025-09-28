@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+
+# Check inputs
+if [ $# -lt 2 ]; then
+  echo "❌ Usage: $0 <bucket-name> <file-path> [s3-key]"
+  exit 1
+fi
+
+BUCKET_NAME=$1
+FILE_PATH=$2
+S3_KEY=${3:-$(basename "$FILE_PATH")}   # Default: filename as key
+
+echo "⬆️ Uploading file '$FILE_PATH' to bucket '$BUCKET_NAME' as key '$S3_KEY' ..."
+
+aws s3api put-object \
+  --bucket "$BUCKET_NAME" \
+  --key "$S3_KEY" \
+  --body "$FILE_PATH"
+
+echo "✅ File uploaded successfully."

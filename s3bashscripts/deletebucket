@@ -1,0 +1,19 @@
+#!/bin/bash
+set -e
+
+# Check if bucket name is passed
+if [ -z "$1" ]; then
+  echo "❌ Usage: $0 <bucket-name> [region]"
+  exit 1
+fi
+
+BUCKET_NAME=$1
+REGION=${2:-us-east-1}   # Default region if not provided
+
+echo "🪣 Attempting to delete bucket: $BUCKET_NAME in region: $REGION ..."
+
+aws s3api delete-bucket \
+  --bucket "$BUCKET_NAME" \
+  --region "$REGION"
+
+echo "✅ Bucket '$BUCKET_NAME' deleted successfully."
