@@ -3,5 +3,5 @@
   "build": {
     "dockerfile": "Dockerfile"
   },
-  "postCreateCommand": "aws --version"
+  "postCreateCommand": "aws --version && .devcontainer/configure-aws.sh"
 }
