@@ -1,0 +1,33 @@
+#!/bin/bash
+set -e
+
+# Check if bucket name is provided
+if [ -z "$1" ]; then
+  echo "❌ Usage: $0 <bucket-name>"
+  exit 1
+fi
+
+BUCKET_NAME=$1
+
+echo "🧹 Emptying bucket: $BUCKET_NAME ..."
+
+# Delete all object versions (if versioning is enabled)
+aws s3api list-object-versions --bucket "$BUCKET_NAME" --query 'Versions[].{Key:Key,VersionId:VersionId}' --output json | \
+jq -c '.[]' | while read obj; do
+  KEY=$(echo $obj | jq -r '.Key')
+  VERSION=$(echo $obj | jq -r '.VersionId')
+  aws s3api delete-object --bucket "$BUCKET_NAME" --key "$KEY" --version-id "$VERSION"
+done
+
+# Delete all delete markers
+aws s3api list-object-versions --bucket "$BUCKET_NAME" --query 'DeleteMarkers[].{Key:Key,VersionId:VersionId}' --output json | \
+jq -c '.[]' | while read obj; do
+  KEY=$(echo $obj | jq -r '.Key')
+  VERSION=$(echo $obj | jq -r '.VersionId')
+  aws s3api delete-object --bucket "$BUCKET_NAME" --key "$KEY" --version-id "$VERSION"
+done
+
+# Delete remaining objects (if any)
+aws s3 rm s3://"$BUCKET_NAME" --recursive
+
+echo "✅ Bucket '$BUCKET_NAME' emptied successfully."
