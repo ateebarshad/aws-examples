@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Create an IAM Role that allows a specific IAM User to assume it and perform any action on S3.
+
+Resources:
+  # IAM Role that can be assumed by a specific user
+  S3FullAccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: "S3FullAccessRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: "arn:aws:iam::560793335514:user/sts-user"
+            Action: sts:AssumeRole
+      Description: Allows a specific IAM user to assume the role and perform any S3 action.
+      Policies:
+        - PolicyName: S3FullAccessPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: "s3:*"
+                Resource:
+                   - "arn:aws:s3:::*"
+                   - "arn:aws:s3:::*/*"
